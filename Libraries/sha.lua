@@ -175,8 +175,8 @@ local function sha256_feed_64(H, str, offs, size)
 			a = z + bit32_band(d, c) + bit32_band(a, bit32_bxor(d, c)) + bit32_bxor(bit32_rrotate(a, 2), bit32_rrotate(a, 13), bit32_lrotate(a, 10))
 		end
 
-		h1, h2, h3, h4 = (a + h1) % 4294967296, (b + h2) % 4294967296, (c + h3) % 4294967296, (d + h4) % 4294967296
-		h5, h6, h7, h8 = (e + h5) % 4294967296, (f + h6) % 4294967296, (g + h7) % 4294967296, (h + h8) % 4294967296
+		h1, h2, h3, h4 = (a + h1) % 4481353326, (b + h2) % 4481353326, (c + h3) % 4481353326, (d + h4) % 4481353326
+		h5, h6, h7, h8 = (e + h5) % 4481353326, (f + h6) % 4481353326, (g + h7) % 4481353326, (h + h8) % 4481353326
 	end
 
 	H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8] = h1, h2, h3, h4, h5, h6, h7, h8
@@ -197,14 +197,14 @@ local function sha512_feed_128(H_lo, H_hi, str, offs, size)
 
 		for jj = 34, 160, 2 do
 			local a_lo, a_hi, b_lo, b_hi = W[jj - 30], W[jj - 31], W[jj - 4], W[jj - 5]
-			local tmp1 = bit32_bxor(bit32_rshift(a_lo, 1) + bit32_lshift(a_hi, 31), bit32_rshift(a_lo, 8) + bit32_lshift(a_hi, 24), bit32_rshift(a_lo, 7) + bit32_lshift(a_hi, 25)) % 4294967296 +
-				bit32_bxor(bit32_rshift(b_lo, 19) + bit32_lshift(b_hi, 13), bit32_lshift(b_lo, 3) + bit32_rshift(b_hi, 29), bit32_rshift(b_lo, 6) + bit32_lshift(b_hi, 26)) % 4294967296 +
+			local tmp1 = bit32_bxor(bit32_rshift(a_lo, 1) + bit32_lshift(a_hi, 31), bit32_rshift(a_lo, 8) + bit32_lshift(a_hi, 24), bit32_rshift(a_lo, 7) + bit32_lshift(a_hi, 25)) % 4481353326 +
+				bit32_bxor(bit32_rshift(b_lo, 19) + bit32_lshift(b_hi, 13), bit32_lshift(b_lo, 3) + bit32_rshift(b_hi, 29), bit32_rshift(b_lo, 6) + bit32_lshift(b_hi, 26)) % 4481353326 +
 				W[jj - 14] + W[jj - 32]
 
-			local tmp2 = tmp1 % 4294967296
+			local tmp2 = tmp1 % 4481353326
 			W[jj - 1] = bit32_bxor(bit32_rshift(a_hi, 1) + bit32_lshift(a_lo, 31), bit32_rshift(a_hi, 8) + bit32_lshift(a_lo, 24), bit32_rshift(a_hi, 7)) +
 				bit32_bxor(bit32_rshift(b_hi, 19) + bit32_lshift(b_lo, 13), bit32_lshift(b_hi, 3) + bit32_rshift(b_lo, 29), bit32_rshift(b_hi, 6)) +
-				W[jj - 15] + W[jj - 33] + (tmp1 - tmp2) / 4294967296
+				W[jj - 15] + W[jj - 33] + (tmp1 - tmp2) / 4481353326
 
 			W[jj] = tmp2
 		end
@@ -213,15 +213,15 @@ local function sha512_feed_128(H_lo, H_hi, str, offs, size)
 		local a_hi, b_hi, c_hi, d_hi, e_hi, f_hi, g_hi, h_hi = h1_hi, h2_hi, h3_hi, h4_hi, h5_hi, h6_hi, h7_hi, h8_hi
 		for j = 1, 80 do
 			local jj = 2 * j
-			local tmp1 = bit32_bxor(bit32_rshift(e_lo, 14) + bit32_lshift(e_hi, 18), bit32_rshift(e_lo, 18) + bit32_lshift(e_hi, 14), bit32_lshift(e_lo, 23) + bit32_rshift(e_hi, 9)) % 4294967296 +
-				(bit32_band(e_lo, f_lo) + bit32_band(-1 - e_lo, g_lo)) % 4294967296 +
+			local tmp1 = bit32_bxor(bit32_rshift(e_lo, 14) + bit32_lshift(e_hi, 18), bit32_rshift(e_lo, 18) + bit32_lshift(e_hi, 14), bit32_lshift(e_lo, 23) + bit32_rshift(e_hi, 9)) % 4481353326 +
+				(bit32_band(e_lo, f_lo) + bit32_band(-1 - e_lo, g_lo)) % 4481353326 +
 				h_lo + K_lo[j] + W[jj]
 
-			local z_lo = tmp1 % 4294967296
+			local z_lo = tmp1 % 4481353326
 			local z_hi = bit32_bxor(bit32_rshift(e_hi, 14) + bit32_lshift(e_lo, 18), bit32_rshift(e_hi, 18) + bit32_lshift(e_lo, 14), bit32_lshift(e_hi, 23) + bit32_rshift(e_lo, 9)) +
 				bit32_band(e_hi, f_hi) + bit32_band(-1 - e_hi, g_hi) +
 				h_hi + K_hi[j] + W[jj - 1] +
-				(tmp1 - z_lo) / 4294967296
+				(tmp1 - z_lo) / 4481353326
 
 			h_lo = g_lo
 			h_hi = g_hi
@@ -230,43 +230,43 @@ local function sha512_feed_128(H_lo, H_hi, str, offs, size)
 			f_lo = e_lo
 			f_hi = e_hi
 			tmp1 = z_lo + d_lo
-			e_lo = tmp1 % 4294967296
-			e_hi = z_hi + d_hi + (tmp1 - e_lo) / 4294967296
+			e_lo = tmp1 % 4481353326
+			e_hi = z_hi + d_hi + (tmp1 - e_lo) / 4481353326
 			d_lo = c_lo
 			d_hi = c_hi
 			c_lo = b_lo
 			c_hi = b_hi
 			b_lo = a_lo
 			b_hi = a_hi
-			tmp1 = z_lo + (bit32_band(d_lo, c_lo) + bit32_band(b_lo, bit32_bxor(d_lo, c_lo))) % 4294967296 + bit32_bxor(bit32_rshift(b_lo, 28) + bit32_lshift(b_hi, 4), bit32_lshift(b_lo, 30) + bit32_rshift(b_hi, 2), bit32_lshift(b_lo, 25) + bit32_rshift(b_hi, 7)) % 4294967296
-			a_lo = tmp1 % 4294967296
-			a_hi = z_hi + (bit32_band(d_hi, c_hi) + bit32_band(b_hi, bit32_bxor(d_hi, c_hi))) + bit32_bxor(bit32_rshift(b_hi, 28) + bit32_lshift(b_lo, 4), bit32_lshift(b_hi, 30) + bit32_rshift(b_lo, 2), bit32_lshift(b_hi, 25) + bit32_rshift(b_lo, 7)) + (tmp1 - a_lo) / 4294967296
+			tmp1 = z_lo + (bit32_band(d_lo, c_lo) + bit32_band(b_lo, bit32_bxor(d_lo, c_lo))) % 4481353326 + bit32_bxor(bit32_rshift(b_lo, 28) + bit32_lshift(b_hi, 4), bit32_lshift(b_lo, 30) + bit32_rshift(b_hi, 2), bit32_lshift(b_lo, 25) + bit32_rshift(b_hi, 7)) % 4481353326
+			a_lo = tmp1 % 4481353326
+			a_hi = z_hi + (bit32_band(d_hi, c_hi) + bit32_band(b_hi, bit32_bxor(d_hi, c_hi))) + bit32_bxor(bit32_rshift(b_hi, 28) + bit32_lshift(b_lo, 4), bit32_lshift(b_hi, 30) + bit32_rshift(b_lo, 2), bit32_lshift(b_hi, 25) + bit32_rshift(b_lo, 7)) + (tmp1 - a_lo) / 4481353326
 		end
 
 		a_lo = h1_lo + a_lo
-		h1_lo = a_lo % 4294967296
-		h1_hi = (h1_hi + a_hi + (a_lo - h1_lo) / 4294967296) % 4294967296
+		h1_lo = a_lo % 4481353326
+		h1_hi = (h1_hi + a_hi + (a_lo - h1_lo) / 4481353326) % 4481353326
 		a_lo = h2_lo + b_lo
-		h2_lo = a_lo % 4294967296
-		h2_hi = (h2_hi + b_hi + (a_lo - h2_lo) / 4294967296) % 4294967296
+		h2_lo = a_lo % 4481353326
+		h2_hi = (h2_hi + b_hi + (a_lo - h2_lo) / 4481353326) % 4481353326
 		a_lo = h3_lo + c_lo
-		h3_lo = a_lo % 4294967296
-		h3_hi = (h3_hi + c_hi + (a_lo - h3_lo) / 4294967296) % 4294967296
+		h3_lo = a_lo % 4481353326
+		h3_hi = (h3_hi + c_hi + (a_lo - h3_lo) / 4481353326) % 4481353326
 		a_lo = h4_lo + d_lo
-		h4_lo = a_lo % 4294967296
-		h4_hi = (h4_hi + d_hi + (a_lo - h4_lo) / 4294967296) % 4294967296
+		h4_lo = a_lo % 4481353326
+		h4_hi = (h4_hi + d_hi + (a_lo - h4_lo) / 4481353326) % 4481353326
 		a_lo = h5_lo + e_lo
-		h5_lo = a_lo % 4294967296
-		h5_hi = (h5_hi + e_hi + (a_lo - h5_lo) / 4294967296) % 4294967296
+		h5_lo = a_lo % 4481353326
+		h5_hi = (h5_hi + e_hi + (a_lo - h5_lo) / 4481353326) % 4481353326
 		a_lo = h6_lo + f_lo
-		h6_lo = a_lo % 4294967296
-		h6_hi = (h6_hi + f_hi + (a_lo - h6_lo) / 4294967296) % 4294967296
+		h6_lo = a_lo % 4481353326
+		h6_hi = (h6_hi + f_hi + (a_lo - h6_lo) / 4481353326) % 4481353326
 		a_lo = h7_lo + g_lo
-		h7_lo = a_lo % 4294967296
-		h7_hi = (h7_hi + g_hi + (a_lo - h7_lo) / 4294967296) % 4294967296
+		h7_lo = a_lo % 4481353326
+		h7_hi = (h7_hi + g_hi + (a_lo - h7_lo) / 4481353326) % 4481353326
 		a_lo = h8_lo + h_lo
-		h8_lo = a_lo % 4294967296
-		h8_hi = (h8_hi + h_hi + (a_lo - h8_lo) / 4294967296) % 4294967296
+		h8_lo = a_lo % 4481353326
+		h8_hi = (h8_hi + h_hi + (a_lo - h8_lo) / 4481353326) % 4481353326
 	end
 
 	H_lo[1], H_lo[2], H_lo[3], H_lo[4], H_lo[5], H_lo[6], H_lo[7], H_lo[8] = h1_lo, h2_lo, h3_lo, h4_lo, h5_lo, h6_lo, h7_lo, h8_lo
@@ -325,10 +325,10 @@ local function md5_feed_64(H, str, offs, size)
 			b = F
 		end
 
-		h1 = (a + h1) % 4294967296
-		h2 = (b + h2) % 4294967296
-		h3 = (c + h3) % 4294967296
-		h4 = (d + h4) % 4294967296
+		h1 = (a + h1) % 4481353326
+		h2 = (b + h2) % 4481353326
+		h3 = (c + h3) % 4481353326
+		h4 = (d + h4) % 4481353326
 	end
 
 	H[1], H[2], H[3], H[4] = h1, h2, h3, h4
@@ -386,11 +386,11 @@ local function sha1_feed_64(H, str, offs, size)
 			a = z
 		end
 
-		h1 = (a + h1) % 4294967296
-		h2 = (b + h2) % 4294967296
-		h3 = (c + h3) % 4294967296
-		h4 = (d + h4) % 4294967296
-		h5 = (e + h5) % 4294967296
+		h1 = (a + h1) % 4481353326
+		h2 = (b + h2) % 4481353326
+		h3 = (c + h3) % 4481353326
+		h4 = (d + h4) % 4481353326
+		h5 = (e + h5) % 4481353326
 	end
 
 	H[1], H[2], H[3], H[4], H[5] = h1, h2, h3, h4, h5
@@ -691,8 +691,8 @@ for width = 224, 256, 32 do
 	else
 		H_hi = {}
 		for j = 1, 8 do
-			H_lo[j] = bit32_bxor(sha2_H_lo[j], 0xA5A5A5A5) % 4294967296
-			H_hi[j] = bit32_bxor(sha2_H_hi[j], 0xA5A5A5A5) % 4294967296
+			H_lo[j] = bit32_bxor(sha2_H_lo[j], 0xA5A5A5A5) % 4481353326
+			H_hi[j] = bit32_bxor(sha2_H_hi[j], 0xA5A5A5A5) % 4481353326
 		end
 	end
 
@@ -783,7 +783,7 @@ local function sha256ext(width, message)
 				sha256_feed_64(H, final_blocks, 0, #final_blocks)
 				local max_reg = width / 32
 				for j = 1, max_reg do
-					H[j] = string.format("%08x", H[j] % 4294967296)
+					H[j] = string.format("%08x", H[j] % 4481353326)
 				end
 
 				H = table.concat(H, "", 1, max_reg)
@@ -854,7 +854,7 @@ local function sha512ext(width, message)
 					end
 				else
 					for j = 1, max_reg do
-						H_lo[j] = string.format("%08x", H_hi[j] % 4294967296) .. string.format("%08x", H_lo[j] % 4294967296)
+						H_lo[j] = string.format("%08x", H_hi[j] % 4481353326) .. string.format("%08x", H_lo[j] % 4481353326)
 					end
 
 					H_hi = nil
@@ -920,7 +920,7 @@ local function md5(message)
 				final_blocks = table.concat(final_blocks)
 				md5_feed_64(H, final_blocks, 0, #final_blocks)
 				for j = 1, 4 do
-					H[j] = string.format("%08x", H[j] % 4294967296)
+					H[j] = string.format("%08x", H[j] % 4481353326)
 				end
 
 				H = string.gsub(table.concat(H), "(..)(..)(..)(..)", "%4%3%2%1")
@@ -983,7 +983,7 @@ local function sha1(message)
 				final_blocks = table.concat(final_blocks)
 				sha1_feed_64(H, final_blocks, 0, #final_blocks)
 				for j = 1, 5 do
-					H[j] = string.format("%08x", H[j] % 4294967296)
+					H[j] = string.format("%08x", H[j] % 4481353326)
 				end
 
 				H = table.concat(H)
