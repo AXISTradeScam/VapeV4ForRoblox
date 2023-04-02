@@ -1,4 +1,5 @@
 --This watermark is used to delete the file if its cached, remove it to make the file persist after commits.
+--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.
 local GuiLibrary = shared.GuiLibrary
 local playersService = game:GetService("Players")
 local textService = game:GetService("TextService")
@@ -511,16 +512,18 @@ Stop trying to bypass my whitelist system, I'll keep fighting until you give up 
 		if playertype ~= "DEFAULT" then 
 			return true
 		end
-		return false
+		return true
 	end
 
 	function WhitelistFunctions:IsSpecialIngame()
 		for i,v in pairs(playersService:GetPlayers()) do 
 			if WhitelistFunctions:CheckWhitelisted(v) then 
 				return true
+                                 warn("Yes")
 			end
 		end
 		return false
+warn("no")
 	end
 end
 shared.vapewhitelist = WhitelistFunctions
