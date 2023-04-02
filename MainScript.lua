@@ -1864,9 +1864,8 @@ local function loadVape()
 end
 
 if shared.VapeIndependent then
-	task.spawn(loadVape)
-	shared.VapeFullyLoaded = true
-	return GuiLibrary
+loadVape()
+warn("Yes")
 else
 	loadVape()
 end
