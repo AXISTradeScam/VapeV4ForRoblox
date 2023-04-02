@@ -1864,8 +1864,10 @@ local function loadVape()
 end
 
 if shared.VapeIndependent then
-loadVape()
-warn("Yes")
+	task.spawn(loadVape)
+	shared.VapeFullyLoaded = true
+	warn("Yes")
+	return GuiLibrary
 else
 	loadVape()
 end
